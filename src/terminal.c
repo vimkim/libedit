@@ -294,26 +294,32 @@ terminal_init(EditLine *el)
 
 	if ((tgoto = dlsym(dl_handle, "tgoto")) == NULL){
 		fprintf (stderr, "ERROR: Cannot find 'tgoto' function in %s.\n", tinfo_so);
+		goto fail1;
 	}
 
 	if ((tgetent = dlsym(dl_handle, "tgetent")) == NULL){
 		fprintf (stderr, "ERROR: Cannot find 'tgetent' function in %s.\n", tinfo_so);
+		goto fail1;
 	}
 
 	if ((tgetflag = dlsym(dl_handle, "tgetflag")) == NULL){
 		fprintf (stderr, "ERROR: Cannot find 'tgetflag' function in %s.\n", tinfo_so);
+		goto fail1;
 	}
 
 	if ((tgetnum = dlsym(dl_handle, "tgetnum")) == NULL){
 		fprintf (stderr, "ERROR: Cannot find 'tgetnum' function in %s.\n", tinfo_so);
+		goto fail1;
 	}
 
 	if ((tgetstr = dlsym(dl_handle, "tgetstr")) == NULL){
 		fprintf (stderr, "ERROR: Cannot find 'tgetstr' function in %s.\n", tinfo_so);
+		goto fail1;
 	}
 
 	if ((tputs = dlsym(dl_handle, "tputs")) == NULL){
 		fprintf (stderr, "ERROR: Cannot find 'tputs' function in %s.\n", tinfo_so);
+		goto fail1;
 	}
 
 	el->el_terminal.t_buf = el_malloc(TC_BUFSIZE *
