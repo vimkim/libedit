@@ -376,7 +376,7 @@ terminal_end(EditLine *el)
         if (dl_handle != NULL) {
                 dlclose(dl_handle);
                 dl_handle = NULL;
-	}					        }
+	}
 
 	el_free(el->el_terminal.t_buf);
 	el->el_terminal.t_buf = NULL;
