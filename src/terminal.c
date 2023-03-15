@@ -54,9 +54,6 @@ __RCSID("$NetBSD: terminal.c,v 1.32 2016/05/09 21:46:56 christos Exp $");
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#ifdef HAVE_TERMCAP_H
-#include <termcap.h>
-#endif
 #ifdef HAVE_CURSES_H
 #include <curses.h>
 #elif HAVE_NCURSES_H
@@ -74,6 +71,19 @@ __RCSID("$NetBSD: terminal.c,v 1.32 2016/05/09 21:46:56 christos Exp $");
 
 #include "el.h"
 #include "fcns.h"
+
+#include <dlfcn.h>
+
+void *dl_handle = NULL;
+char *(*tgoto) (const char *cap, int col, int row);
+int (*tgetent) (char *bp, const char *name);
+int (*tgetflag) (char *id);
+int (*tgetnum) (char *id);
+char *(*tgetstr) (char *id, char **area);
+int (*tputs) (const char *str, int affcnt, int (*putc)(int));
+
+#define	NCURSES_HIGH_VERSION	10
+#define	NCURSES_LOW_VERSION	5
 
 /*
  * IMPORTANT NOTE: these routines are allowed to look at the current screen
@@ -268,6 +278,43 @@ terminal_setflags(EditLine *el)
 libedit_private int
 terminal_init(EditLine *el)
 {
+	char tinfo_so[TC_BUFSIZE];
+	int major_version;
+
+	for (major_version = NCURSES_HIGH_VERSION; major_version >= NCURSES_LOW_VERSION; major_version--){
+		sprintf (tinfo_so, "libtinfo.so.%d", major_version);
+		if ((dl_handle = dlopen (tinfo_so, RTLD_LAZY)) != NULL)
+			break;
+	}
+
+	if (dl_handle == NULL){
+		fprintf (stderr, "ERROR: Cannot load ncurses library.\n");
+		goto fail1;
+	}
+
+	if ((tgoto = dlsym(dl_handle, "tgoto")) == NULL){
+		fprintf (stderr, "ERROR: Cannot find 'tgoto' function in %s.\n", tinfo_so);
+	}
+
+	if ((tgetent = dlsym(dl_handle, "tgetent")) == NULL){
+		fprintf (stderr, "ERROR: Cannot find 'tgetent' function in %s.\n", tinfo_so);
+	}
+
+	if ((tgetflag = dlsym(dl_handle, "tgetflag")) == NULL){
+		fprintf (stderr, "ERROR: Cannot find 'tgetflag' function in %s.\n", tinfo_so);
+	}
+
+	if ((tgetnum = dlsym(dl_handle, "tgetnum")) == NULL){
+		fprintf (stderr, "ERROR: Cannot find 'tgetnum' function in %s.\n", tinfo_so);
+	}
+
+	if ((tgetstr = dlsym(dl_handle, "tgetstr")) == NULL){
+		fprintf (stderr, "ERROR: Cannot find 'tgetstr' function in %s.\n", tinfo_so);
+	}
+
+	if ((tputs = dlsym(dl_handle, "tputs")) == NULL){
+		fprintf (stderr, "ERROR: Cannot find 'tputs' function in %s.\n", tinfo_so);
+	}
 
 	el->el_terminal.t_buf = el_malloc(TC_BUFSIZE *
 	    sizeof(*el->el_terminal.t_buf));
@@ -319,6 +366,11 @@ fail1:
 libedit_private void
 terminal_end(EditLine *el)
 {
+
+        if (dl_handle != NULL) {
+                dlclose(dl_handle);
+                dl_handle = NULL;
+	}					        }
 
 	el_free(el->el_terminal.t_buf);
 	el->el_terminal.t_buf = NULL;
