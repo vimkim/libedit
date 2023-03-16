@@ -82,8 +82,8 @@ int (*tgetnum) (char *id);
 char *(*tgetstr) (char *id, char **area);
 int (*tputs) (const char *str, int affcnt, int (*putc)(int));
 
-#define	NCURSES_HIGH_VERSION	10
-#define	NCURSES_LOW_VERSION	5
+#define	TINFO_HIGH_VERSION	10
+#define	TINFO_LOW_VERSION	5
 
 /*
  * IMPORTANT NOTE: these routines are allowed to look at the current screen
@@ -281,14 +281,14 @@ terminal_init(EditLine *el)
 	char tinfo_so[TC_BUFSIZE];
 	int major_version;
 
-	for (major_version = NCURSES_HIGH_VERSION; major_version >= NCURSES_LOW_VERSION; major_version--){
+	for (major_version = TINFO_HIGH_VERSION; major_version >= TINFO_LOW_VERSION; major_version--){
 		sprintf (tinfo_so, "libtinfo.so.%d", major_version);
 		if ((dl_handle = dlopen (tinfo_so, RTLD_LAZY)) != NULL)
 			break;
 	}
 
 	if (dl_handle == NULL){
-		fprintf (stderr, "ERROR: Cannot load ncurses library.\n");
+		fprintf (stderr, "ERROR: Cannot load tinfo library. Please install tinfo library.\n");
 		goto fail1;
 	}
 
