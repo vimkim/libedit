@@ -42,7 +42,12 @@
 /*
  * Local defaults
  */
+#define	CUBRID_CSQL
+
+#ifndef CUBRID_CSQL
 #define	KSHVI
+#endif
+
 #define	VIDEFAULT
 #define	ANCHOR
 
