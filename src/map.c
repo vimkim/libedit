@@ -76,7 +76,11 @@ static const el_action_t  el_map_emacs[] = {
 	/*   6 */	ED_NEXT_CHAR,		/* ^F */
 	/*   7 */	ED_UNASSIGNED,		/* ^G */
 	/*   8 */	EM_DELETE_PREV_CHAR,	/* ^H */
+#if defined (CUBRID_CSQL)
+	/*   9 */	ED_INSERT,		/* ^I */
+#else
 	/*   9 */	ED_UNASSIGNED,		/* ^I */
+#endif
 	/*  10 */	ED_NEWLINE,		/* ^J */
 	/*  11 */	ED_KILL_LINE,		/* ^K */
 	/*  12 */	ED_CLEAR_SCREEN,	/* ^L */

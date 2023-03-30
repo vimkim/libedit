@@ -325,11 +325,8 @@ rl_initialize(void)
 
 	/* set default mode to "emacs"-style and read setting afterwards */
 	/* so this can be overridden */
-#ifdef CUBRID_CSQL
-	el_set(e, EL_EDITOR, "vi");
-#else
 	el_set(e, EL_EDITOR, "emacs");
-#endif
+
 	if (rl_terminal_name != NULL)
 		el_set(e, EL_TERMINAL, rl_terminal_name);
 	else
