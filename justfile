@@ -1,0 +1,2 @@
+build:
+    make all AUTOCONF=: AUTOHEADER=: AUTOMAKE=: ACLOCAL=:
